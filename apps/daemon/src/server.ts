@@ -18,6 +18,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import net from 'node:net';
 import {
+  DEFAULT_DECK_PROMPT_VARIANT,
   executionProfileFromStreamFormat,
   isCritiqueRunEligible,
   PLUGIN_SHARE_ACTION_PLUGIN_IDS,
@@ -1475,6 +1476,13 @@ export function resolveFormAnsweredOverride({ formId, pendingFlowStep }) {
   if (!BRIEF_FORM_IDS.has(normalizedFormId)) return FORM_ANSWERED_GENERIC_OVERRIDE;
   if (pendingFlowStep) return pendingFlowStep.formAnsweredOverride;
   return FORM_ANSWERED_SYSTEM_OVERRIDE;
+}
+
+export function formAnsweredSystemOverrideForCurrentPrompt(currentPrompt) {
+  return resolveFormAnsweredOverride({
+    formId: submittedFormIdFromPrompt(currentPrompt),
+    pendingFlowStep: null,
+  });
 }
 
 function formAnswerTransitionForCurrentPrompt(currentPrompt, options = {}) {
@@ -4352,6 +4360,8 @@ export async function startServer({
       ...(pluginBlock ? { pluginBlock } : {}),
       ...(activeStageBlocks ? { activeStageBlocks } : {}),
       userInstructions,
+      deckPromptVariant:
+        appConfigForPrompt?.deckPromptVariant ?? DEFAULT_DECK_PROMPT_VARIANT,
       freeformDeckSignal,
       mediaHintSignal,
       platformHintSignal,
@@ -5378,12 +5388,7 @@ export async function startServer({
     // instructions and request) — see server.ts:9920 composer notes.
     const ECHO_GUARD =
       '\n\n(Do not quote, restate, or echo the # Instructions block above in your reply. Begin your response with the answer to the # User request below.)';
-    const formAnswerMatch = FORM_ANSWERS_HEADER_RE.exec(
-      typeof currentPrompt === 'string' ? currentPrompt : '',
-    );
-    const formIdForOverride = formAnswerMatch
-      ? ((formAnswerMatch[1] || 'form').trim().replace(/[^\w.-]/g, '') || 'form').toLowerCase()
-      : null;
+    const formIdForOverride = submittedFormIdFromPrompt(currentPrompt);
     const formOverride = resolveFormAnsweredOverride({
       formId: formIdForOverride,
       pendingFlowStep,
