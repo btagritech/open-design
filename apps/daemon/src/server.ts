@@ -4112,6 +4112,7 @@ export async function startServer({
       metadata,
       skillMode,
       skillModes: skillModes.size > 0 ? Array.from(skillModes) : undefined,
+      freeformDeckSignal,
     });
     const includeDefaultRouterSkill = shouldIncludeDefaultRouterSkill({
       sessionMode: normalizedSessionMode,
@@ -4127,7 +4128,10 @@ export async function startServer({
       automaticDefaultRouterSkill && !includeDefaultRouterSkill
         ? skillNameWithoutAutomaticScenario
         : skillName;
-    const includedAutomaticCraft = shouldIncludeAutomaticScenarioCraft(normalizedSessionMode)
+    const includedAutomaticCraft = shouldIncludeAutomaticScenarioCraft(
+      normalizedSessionMode,
+      includeDefaultRouterSkill,
+    )
       ? automaticScenarioCraftRequires
       : [];
     const excludedCraft = new Set(designSystemCraftExemptions);

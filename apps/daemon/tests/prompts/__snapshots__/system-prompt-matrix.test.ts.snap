@@ -219,13 +219,12 @@ exports[`composeSystemPrompt — scenario × section golden matrix > keeps the s
       "slim-core-charter",
       "project-metadata",
       "deck-directive",
-      "maybe-deck-framework",
       "media-dispatch-hint",
       "inspiration-step",
       "host-clarification-gate",
       "role-marker-guard",
     ],
-    "totalChars": 29688,
+    "totalChars": 29297,
   },
   "freeform-other-no-deck-signal": {
     "sections": [
