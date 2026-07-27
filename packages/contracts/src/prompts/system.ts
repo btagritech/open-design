@@ -590,8 +590,8 @@ export function composeSystemPrompt({
 
   if (
     !isAskMode
-    && sessionMode !== 'plan'
-    && streamFormat !== 'plain'
+    && !isSlimCore
+    && resolvedExecutionProfile === 'filesystem'
     && !isMediaSurfaceEarly
   ) {
     parts.push(`\n\n${SEMANTIC_OUTPUT_FILE_NAMES}`);
